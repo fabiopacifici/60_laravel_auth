@@ -21,7 +21,9 @@ Route::middleware('auth')->prefix('admin')->namespace('Admin')->name('admin.')->
     // Admin Dashboard
     Route::get('/', 'HomeController@index')->name('dashboard');
     // Admin posts
-    Route::resource('posts', 'PostController');
+    Route::resource('posts', 'PostController')->parameters([
+        'posts' => 'post:slug'
+    ]);
 });
 
 // inseriamola come ultima rotta
@@ -29,3 +31,13 @@ Route::middleware('auth')->prefix('admin')->namespace('Admin')->name('admin.')->
 Route::get("{any?}", function () {
     return view("guest.home");
 })->where("any", ".*");
+
+
+
+/*
+- close registration
+- Model: Category + Table: categories + Controller: Admin/CategoryController + One to Many
+- Model: Tag + Table: tags + Controller: Admin/TagController + Many To Many
+
+
+*/

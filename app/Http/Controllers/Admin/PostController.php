@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Post;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
-use Illuminate\Support\Str;
+
 
 class PostController extends Controller
 {
@@ -45,8 +44,7 @@ class PostController extends Controller
         // Validate data
         $val_data = $request->validated();
         // Gererate the slug
-        $slug = Str::slug($request->title, '-');
-        //dd($slug);
+        $slug = Post::generateSlug($request->title);
         $val_data['slug'] = $slug;
 
         // create the resource
@@ -92,7 +90,7 @@ class PostController extends Controller
         $val_data = $request->validated();
         //dd($val_data);
         // Gererate the slug
-        $slug = Str::slug($request->title, '-');
+        $slug = Post::generateSlug($request->title);
         //dd($slug);
         $val_data['slug'] = $slug;
         // update the resource
