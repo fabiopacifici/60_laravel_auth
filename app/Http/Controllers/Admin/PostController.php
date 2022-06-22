@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
-
-
+use Illuminate\Http\Request; // 👈 Import the Request class
+use Illuminate\Validation\Rule; // 👈 Import the Validation Rule class
 class PostController extends Controller
 {
     /**
@@ -82,12 +82,21 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(PostRequest $request, Post $post)
+    public function update(Request $request, Post $post)
     {
+        /* Use the standard Request ☝ */
         //dd($request->all());
 
         // validate data
-        $val_data = $request->validated();
+        //$val_data = $request->validated();
+
+        /* ⚡ Validation unique ⚡*/
+        $val_data = $request->validate([
+            'title' => ['required', Rule::unique('posts')->ignore($post)],
+            'cover_image' => 'nullable',
+            'content' => 'nullable'
+        ]);
+
         //dd($val_data);
         // Gererate the slug
         $slug = Post::generateSlug($request->title);
