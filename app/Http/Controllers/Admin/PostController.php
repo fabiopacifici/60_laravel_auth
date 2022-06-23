@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Post;
+use App\Models\Category;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use Illuminate\Http\Request; // 👈 Import the Request class
@@ -28,7 +29,9 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('admin.posts.create');
+        $categories = Category::all();
+        //dd($categories);
+        return view('admin.posts.create', compact('categories'));
     }
 
     /**
@@ -43,9 +46,15 @@ class PostController extends Controller
 
         // Validate data
         $val_data = $request->validated();
+
+        // se l'id esiste tra gli id della tabelal categories
+
+
         // Gererate the slug
         $slug = Post::generateSlug($request->title);
         $val_data['slug'] = $slug;
+
+        //dd($val_data);
 
         // create the resource
         Post::create($val_data);
@@ -72,7 +81,10 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('admin.posts.edit', compact('post'));
+
+        $categories = Category::all();
+
+        return view('admin.posts.edit', compact('post', 'categories'));
     }
 
     /**
@@ -93,6 +105,7 @@ class PostController extends Controller
         /* ⚡ Validation unique ⚡*/
         $val_data = $request->validate([
             'title' => ['required', Rule::unique('posts')->ignore($post)],
+            'category_id' => 'nullable|exists:categories,id',
             'cover_image' => 'nullable',
             'content' => 'nullable'
         ]);

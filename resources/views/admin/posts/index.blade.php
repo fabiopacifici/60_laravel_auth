@@ -7,11 +7,7 @@
         <div><a href="{{route('admin.posts.create')}}" class="btn btn-primary">Add Post</a></div>
     </div>
 
-    @if (session('message'))
-    <div class="alert alert-success">
-        {{ session('message') }}
-    </div>
-    @endif
+    @include('partials.session_message')
     <table class="table table-striped table-inverse table-responsive">
         <thead class="thead-inverse">
             <tr>
