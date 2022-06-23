@@ -30,10 +30,12 @@
         <label for="category_id" class="form-label">Categories</label>
         <select class="form-control @error('category_id') is-invalid @enderror" name="category_id" id="category_id">
             <option value="">Select a category</option>
-            @foreach($categories as $category)
+            @forelse($categories as $category)
 
-            <option value="{{$category->id}}" {{$category->id == old('category_id', $post->category->id)  ? 'selected' : ''}}>{{$category->name}}</option>
-            @endforeach
+            <option value="{{$category->id}}" {{ $category->id == old('category_id', $post->category ? $post->category->id :'' )  ? 'selected' : ''}}>{{$category->name}}</option>
+            @empty
+            <option value="" disabled> No categories to select</option>
+            @endforelse
         </select>
     </div>
 
