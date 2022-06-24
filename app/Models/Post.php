@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
+
 class Post extends Model
 {
     protected $fillable = ['title', 'content', 'slug', 'cover_image', 'category_id'];
@@ -14,8 +14,6 @@ class Post extends Model
     {
         return Str::slug($title, '-');
     }
-
-
 
     /**
      * Get the category that owns the Post
@@ -26,6 +24,4 @@ class Post extends Model
     {
         return $this->belongsTo(Category::class);
     }
-
-
 }
