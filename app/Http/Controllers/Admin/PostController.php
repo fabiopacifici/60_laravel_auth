@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Post;
-use App\Models\Category;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
+use App\Models\Category;
+use App\Models\Post;
+use App\Models\Tag;
 use Illuminate\Http\Request; // 👈 Import the Request class
-use Illuminate\Validation\Rule; // 👈 Import the Validation Rule class
+use Illuminate\Support\Facades\Auth; // 👈 Import the Validation Rule class
+use Illuminate\Validation\Rule;
+
 class PostController extends Controller
 {
     /**
@@ -30,34 +33,41 @@ class PostController extends Controller
     public function create()
     {
         $categories = Category::all();
+        $tags = Tag::all();
         //dd($categories);
-        return view('admin.posts.create', compact('categories'));
+        return view('admin.posts.create', compact('categories', 'tags'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\PostRequest $request
+     * @param  \App\Http\Requests\PostRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(PostRequest $request)
     {
-        //dd($request->all());
+        //ddd($request->all());
+
+        /* TODO
+        Validate all tags */
 
         // Validate data
         $val_data = $request->validated();
 
         // se l'id esiste tra gli id della tabelal categories
 
-
         // Gererate the slug
         $slug = Post::generateSlug($request->title);
         $val_data['slug'] = $slug;
 
         //dd($val_data);
+        // assign the post to the authenticated user
+        $val_data['user_id'] = Auth::id();
 
         // create the resource
-        Post::create($val_data);
+        $new_post = Post::create($val_data);
+        $new_post->tags()->attach($request->tags);
+
         // redirect to a get route
         return redirect()->route('admin.posts.index')->with('message', 'Post Created Successfully');
     }
@@ -81,10 +91,10 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-
         $categories = Category::all();
+        $tags = Tag::all();
 
-        return view('admin.posts.edit', compact('post', 'categories'));
+        return view('admin.posts.edit', compact('post', 'categories', 'tags'));
     }
 
     /**
@@ -106,8 +116,9 @@ class PostController extends Controller
         $val_data = $request->validate([
             'title' => ['required', Rule::unique('posts')->ignore($post)],
             'category_id' => 'nullable|exists:categories,id',
+            'tags' => 'exists:tags,id',
             'cover_image' => 'nullable',
-            'content' => 'nullable'
+            'content' => 'nullable',
         ]);
 
         //dd($val_data);
@@ -118,6 +129,8 @@ class PostController extends Controller
         // update the resource
         $post->update($val_data);
 
+        //Sync tags
+        $post->tags()->sync($request->tags);
         // redirect to get route
         return redirect()->route('admin.posts.index')->with('message', "$post->title updated successfully");
     }
@@ -133,7 +146,7 @@ class PostController extends Controller
         //
 
         $post->delete();
-        return redirect()->route('admin.posts.index')->with('message', "$post->title deleted successfully");
 
+        return redirect()->route('admin.posts.index')->with('message', "$post->title deleted successfully");
     }
 }

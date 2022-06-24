@@ -22,12 +22,26 @@
         <select class="form-control @error('category_id') is-invalid @enderror" name="category_id" id="category_id">
             <option value="">Select a category</option>
             @foreach($categories as $category)
-            <!-- TODO:
-            Use old() function -->
             <option value="{{$category->id}}" {{ $category->id == old('category_id') ? 'selected' : '' }}>{{$category->name}}</option>
             @endforeach
         </select>
     </div>
+
+    <div class="mb-3">
+        <label for="tags" class="form-label">
+            Tags
+        </label>
+        <select multiple class="form-select" name="tags[]" id="tags" aria-label="tags">
+            <option value="">Select tags</option>
+            @forelse ($tags as $tag )
+            <option value="{{$tag->id}}">{{ $tag->name}} </option>
+
+            @empty
+            <option value="">No Tags </option>
+            @endforelse
+        </select>
+    </div>
+
     <div class="mb-4">
         <label for="content">Content</label>
         <textarea class="form-control  @error('content') is-invalid @enderror" name="content" id="content" rows="4">

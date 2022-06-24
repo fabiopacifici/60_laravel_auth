@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class Post extends Model
 {
-    protected $fillable = ['title', 'content', 'slug', 'cover_image', 'category_id'];
+    protected $fillable = ['title', 'content', 'slug', 'cover_image', 'category_id', 'user_id'];
 
     public static function generateSlug($title)
     {
@@ -34,5 +34,15 @@ class Post extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    /**
+     * Get the user that owns the Post
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
